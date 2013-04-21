@@ -59,7 +59,7 @@ let aot_of_string = function
   | "MPEG2 AAC-LC" -> `Mpeg_2 `AAC_LC
   | "MPEG2 HE-AAC" -> `Mpeg_2 `HE_AAC
   | "MPEG2 HE-AAC v2" -> `Mpeg_2 `HE_AAC_v2
-  | _ -> raise Fdkaac.Unsupported_parameter
+  | _ -> raise Fdkaac.Encoder.Unsupported_parameter
 
 let string_of_aot = function
   | `Mpeg_4 `AAC_LC -> "MPEG4 AAC-LC"
@@ -128,12 +128,12 @@ let _ =
     let _ = input_int ic in (* bytes / s *)
     let _ = input_short ic in (* block align *)
     let bits = input_short ic in
-    let enc = Fdkaac.create channels in 
-    Fdkaac.set enc (`Aot !aot);
-    Fdkaac.set enc (`Bitrate !bitrate);
-    Fdkaac.set enc (`Transmux `Adts);
-    Fdkaac.set enc (`Samplerate infreq);
-    Fdkaac.set enc (`Afterburner !afterburner);
+    let enc = Fdkaac.Encoder.create channels in 
+    Fdkaac.Encoder.set enc (`Aot !aot);
+    Fdkaac.Encoder.set enc (`Bitrate !bitrate);
+    Fdkaac.Encoder.set enc (`Transmux `Adts);
+    Fdkaac.Encoder.set enc (`Samplerate infreq);
+    Fdkaac.Encoder.set enc (`Afterburner !afterburner);
     let buflen = 1024 in
     let data = String.create buflen in
     let start = Unix.time () in
@@ -148,11 +148,11 @@ let _ =
           let len = input ic data 0 buflen in
           if len = 0 then
             raise End_of_file;
-          let ret = Fdkaac.encode enc data 0 len in
+          let ret = Fdkaac.Encoder.encode enc data 0 len in
           output_string oc ret;
         done;
         with End_of_file -> () end;
-        let ret = Fdkaac.flush enc in
+        let ret = Fdkaac.Encoder.flush enc in
         output_string oc ret;
         close_in ic;
         close_out oc;
