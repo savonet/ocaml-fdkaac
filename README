@@ -1,16 +1,16 @@
 ocaml-fdkaac
 
 This package contains an OCaml interface for 
-the AAC+ encoding library, otherwise known as libfdkaac.
+the fdk=aac library.
 
 Please read the COPYING file before using this software.
 
 Prerequisites:
 ==============
 
-- ocaml >= 3.10.2 (haven't tried earlier versions)
+- ocaml >= 4.00.1 (haven't tried earlier versions)
 
-- libfdkaac >= 2.0
+- fdk-aac >= 0.1.1
 
 - findlib >= 0.8.1 (haven't tried earlier versions)
 
