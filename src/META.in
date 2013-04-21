@@ -1,0 +1,6 @@
+name="fdkaac"
+version="@VERSION@"
+description="OCaml bindings for fdkaac"
+requires="@requires@"
+archive(byte)="fdkaac.cma"
+archive(native)="fdkaac.cmxa"
