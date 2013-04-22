@@ -166,6 +166,7 @@ struct
       | `Bitrate of int
       | `Bitrate_mode of bitrate_mode
       | `Samplerate of int
+      | `Sbr_mode of bool
       | `Granule_length of int
       | `Afterburner of bool
       | `Bandwidth of bool
@@ -178,6 +179,7 @@ struct
       | `Bitrate
       | `Bitrate_mode
       | `Samplerate
+      | `Sbr_mode
       | `Granule_length
       | `Afterburner
       | `Bandwidth
@@ -189,9 +191,10 @@ struct
     | `Bitrate x -> `Bitrate, x
     | `Bitrate_mode x -> `Bitrate_mode, (int_of_bitrate_mode x)
     | `Samplerate x -> `Samplerate, x
+    | `Sbr_mode x -> `Sbr_mode, (if x then 1 else 0)
     | `Granule_length x -> `Granule_length, x
-    | `Afterburner x -> `Afterburner, (if x then 0 else 1)
-    | `Bandwidth x -> `Bandwidth, (if x then 0 else 1)
+    | `Afterburner x -> `Afterburner, (if x then 1 else 0)
+    | `Bandwidth x -> `Bandwidth, (if x then 1 else 0)
     | `Transmux x -> `Transmux, (int_of_transmux x)
   
   external set : enc -> param_name -> int -> unit = "ocaml_fdkaac_set_param"
@@ -205,6 +208,7 @@ struct
     | `Bitrate, x -> `Bitrate x
     | `Bitrate_mode, x -> `Bitrate_mode (bitrate_mode_of_int x)
     | `Samplerate, x -> `Samplerate x
+    | `Sbr_mode, x -> `Sbr_mode (x == 1)
     | `Granule_length, x -> `Granule_length x
     | `Afterburner, x -> `Afterburner (x == 1)
     | `Bandwidth, x -> `Bandwidth (x == 1)

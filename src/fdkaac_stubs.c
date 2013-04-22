@@ -277,30 +277,46 @@ CAMLprim value ocaml_fdkaac_flush(value e)
   CAMLreturn(ret);
 }
 
+static inline int param_of_value(value p)
+{
+  if (p == get_var(Aot))
+    return AACENC_AOT;
+
+  if (p == get_var(Bitrate))
+    return AACENC_BITRATE;
+
+  if (p == get_var(Bitrate_mode))
+    return AACENC_BITRATEMODE;
+
+  if (p == get_var(Samplerate))
+    return AACENC_SAMPLERATE;
+
+  if (p == get_var(Sbr_mode))
+    return AACENC_SBR_MODE;
+
+  if (p == get_var(Granule_length))
+    return AACENC_GRANULE_LENGTH;
+
+  if (p == get_var(Afterburner))
+    return AACENC_AFTERBURNER;
+
+  if (p == get_var(Bandwidth))
+    return AACENC_BANDWIDTH;
+
+  if (p == get_var(Transmux))
+    return AACENC_TRANSMUX;
+
+  caml_raise_constant(*caml_named_value("fdkaac_exn_unsupported_parameter"));
+}
+  
+
 CAMLprim value ocaml_fdkaac_set_param(value e, value p, value v)
 {
   CAMLparam3(e,p,v);
 
   HANDLE_AACENCODER enc = Encoder_val(e);
 
-  AACENC_PARAM param;
-
-  if (p == get_var(Aot))
-    param = AACENC_AOT;
-  else if (p == get_var(Bitrate))
-    param = AACENC_BITRATE;
-  else if (p == get_var(Bitrate_mode))
-    param = AACENC_BITRATEMODE;
-  else if (p == get_var(Samplerate))
-    param = AACENC_SAMPLERATE;
-  else if (p == get_var(Granule_length))
-    param = AACENC_GRANULE_LENGTH;
-  else if (p == get_var(Afterburner))
-    param = AACENC_AFTERBURNER;
-  else if (p == get_var(Bandwidth))
-    param = AACENC_BANDWIDTH;
-  else if (p == get_var(Transmux))
-    param = AACENC_TRANSMUX;
+  AACENC_PARAM param = param_of_value(p);
 
   check_for_err(aacEncoder_SetParam(enc, param, Int_val(v)));
 
@@ -313,24 +329,7 @@ CAMLprim value ocaml_fdkaac_get_param(value e, value p)
 
   HANDLE_AACENCODER enc = Encoder_val(e);
 
-  AACENC_PARAM param;
-
-  if (p == get_var(Aot))
-    param = AACENC_AOT;
-  else if (p == get_var(Bitrate))
-    param = AACENC_BITRATE;
-  else if (p == get_var(Bitrate_mode))
-    param = AACENC_BITRATEMODE;
-  else if (p == get_var(Samplerate))
-    param = AACENC_SAMPLERATE;
-  else if (p == get_var(Granule_length))
-    param = AACENC_GRANULE_LENGTH;
-  else if (p == get_var(Afterburner))
-    param = AACENC_AFTERBURNER;
-  else if (p == get_var(Bandwidth))
-    param = AACENC_BANDWIDTH;
-  else if (p == get_var(Transmux))
-    param = AACENC_TRANSMUX;
+  AACENC_PARAM param = param_of_value(p);
 
   int ans = aacEncoder_GetParam(enc, param);
 

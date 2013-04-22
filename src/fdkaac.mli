@@ -79,6 +79,7 @@ sig
       | `Bitrate
       | `Bitrate_mode
       | `Samplerate
+      | `Sbr_mode
       | `Granule_length
       | `Afterburner
       | `Bandwidth
@@ -91,6 +92,7 @@ sig
       | `Bitrate of int
       | `Bitrate_mode of bitrate_mode
       | `Samplerate of int
+      | `Sbr_mode of bool
       | `Granule_length of int
       | `Afterburner of bool
       | `Bandwidth of bool
