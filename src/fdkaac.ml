@@ -185,19 +185,30 @@ struct
       | `Bandwidth
       | `Transmux
     ]
-  
+
+  let int_of_param_name = function
+    | `Aot -> 0x0100
+    | `Bitrate -> 0x0101
+    | `Bitrate_mode -> 0x0102
+    | `Samplerate -> 0x0103
+    | `Sbr_mode -> 0x0104
+    | `Granule_length -> 0x0105
+    | `Afterburner -> 0x0200
+    | `Bandwidth -> 0x0203
+    | `Transmux -> 0x0300
+
   let extract_param = function
-    | `Aot x -> `Aot, (int_of_aot x)
-    | `Bitrate x -> `Bitrate, x
-    | `Bitrate_mode x -> `Bitrate_mode, (int_of_bitrate_mode x)
-    | `Samplerate x -> `Samplerate, x
-    | `Sbr_mode x -> `Sbr_mode, (if x then 1 else 0)
-    | `Granule_length x -> `Granule_length, x
-    | `Afterburner x -> `Afterburner, (if x then 1 else 0)
-    | `Bandwidth x -> `Bandwidth, (if x then 1 else 0)
-    | `Transmux x -> `Transmux, (int_of_transmux x)
+    | `Aot x -> (int_of_param_name `Aot), (int_of_aot x)
+    | `Bitrate x -> (int_of_param_name `Bitrate), x
+    | `Bitrate_mode x -> (int_of_param_name `Bitrate_mode), (int_of_bitrate_mode x)
+    | `Samplerate x -> (int_of_param_name `Samplerate), x
+    | `Sbr_mode x -> (int_of_param_name `Sbr_mode), (if x then 1 else 0)
+    | `Granule_length x -> (int_of_param_name `Granule_length), x
+    | `Afterburner x -> (int_of_param_name `Afterburner), (if x then 1 else 0)
+    | `Bandwidth x -> (int_of_param_name `Bandwidth), (if x then 1 else 0)
+    | `Transmux x -> (int_of_param_name `Transmux), (int_of_transmux x)
   
-  external set : enc -> param_name -> int -> unit = "ocaml_fdkaac_set_param"
+  external set : enc -> int -> int -> unit = "ocaml_fdkaac_set_param"
   
   let set enc param =
     let p, v = extract_param param in
@@ -214,10 +225,12 @@ struct
     | `Bandwidth, x -> `Bandwidth (x == 1)
     | `Transmux, x -> `Transmux (transmux_of_int x)
   
-  external get : enc -> param_name -> int = "ocaml_fdkaac_set_param"
+  external get : enc -> int -> int = "ocaml_fdkaac_set_param"
   
   let get enc param =
-    let x = get enc.enc param in
+    let x =
+      get enc.enc (int_of_param_name param)
+    in
     pack_param (param, x)
     
   external encode : enc -> string -> int -> int -> string = "ocaml_fdkaac_encode"

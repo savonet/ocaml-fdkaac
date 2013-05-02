@@ -35,9 +35,6 @@
 #include <stdint.h>
 #include <string.h>
 
-/* polymorphic variant utility macro */
-#define get_var(x) caml_hash_variant(#x)
-
 /* Not all errors seem to be used
  * so we only check the one that 
  * appear relevant.. */
@@ -277,46 +274,13 @@ CAMLprim value ocaml_fdkaac_flush(value e)
   CAMLreturn(ret);
 }
 
-static inline int param_of_value(value p)
-{
-  if (p == get_var(Aot))
-    return AACENC_AOT;
-
-  if (p == get_var(Bitrate))
-    return AACENC_BITRATE;
-
-  if (p == get_var(Bitrate_mode))
-    return AACENC_BITRATEMODE;
-
-  if (p == get_var(Samplerate))
-    return AACENC_SAMPLERATE;
-
-  if (p == get_var(Sbr_mode))
-    return AACENC_SBR_MODE;
-
-  if (p == get_var(Granule_length))
-    return AACENC_GRANULE_LENGTH;
-
-  if (p == get_var(Afterburner))
-    return AACENC_AFTERBURNER;
-
-  if (p == get_var(Bandwidth))
-    return AACENC_BANDWIDTH;
-
-  if (p == get_var(Transmux))
-    return AACENC_TRANSMUX;
-
-  caml_raise_constant(*caml_named_value("fdkaac_exn_unsupported_parameter"));
-}
-  
-
 CAMLprim value ocaml_fdkaac_set_param(value e, value p, value v)
 {
   CAMLparam3(e,p,v);
 
   HANDLE_AACENCODER enc = Encoder_val(e);
 
-  AACENC_PARAM param = param_of_value(p);
+  AACENC_PARAM param = Int_val(p);
 
   check_for_err(aacEncoder_SetParam(enc, param, Int_val(v)));
 
@@ -326,12 +290,13 @@ CAMLprim value ocaml_fdkaac_set_param(value e, value p, value v)
 CAMLprim value ocaml_fdkaac_get_param(value e, value p)
 {
   CAMLparam2(e,p);
+  int ans;
 
   HANDLE_AACENCODER enc = Encoder_val(e);
 
-  AACENC_PARAM param = param_of_value(p);
+  AACENC_PARAM param = Int_val(p);
 
-  int ans = aacEncoder_GetParam(enc, param);
+  ans = aacEncoder_GetParam(enc, param);
 
   CAMLreturn(Val_int(ans));
 }
