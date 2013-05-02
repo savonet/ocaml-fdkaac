@@ -225,7 +225,7 @@ struct
     | `Bandwidth, x -> `Bandwidth (x == 1)
     | `Transmux, x -> `Transmux (transmux_of_int x)
   
-  external get : enc -> int -> int = "ocaml_fdkaac_set_param"
+  external get : enc -> int -> int = "ocaml_fdkaac_get_param"
   
   let get enc param =
     let x =
