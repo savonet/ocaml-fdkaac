@@ -4,6 +4,7 @@ PROGNAME := ocaml-fdkaac
 DISTFILES := @AUTOCONF_INSTALL_FILES@ CHANGES COPYING Makefile.in README \
 	bootstrap configure configure.ac  \
 	src/*.ml src/*.mli src/*.c src/Makefile.in src/META.in \
+	src/fdkaac_loader.ml src/fdkaac_dynlink.mli.in \
 	src/OCamlMakefile 
 VERSION = @VERSION@
 

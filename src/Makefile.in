@@ -9,6 +9,7 @@ OCAMLMAKEFILE = OCamlMakefile
 
 OCAMLFIND = @OCAMLFIND@
 OCAMLFIND_LDCONF = @OCAMLFIND_LDCONF@
+OCAML_DYNLINK = @OCAML_DYNLINK@
 OCAMLC = @OCAMLC@
 OCAMLOPT = @OCAMLOPT@
 OCAMLBEST = @OCAMLBEST@
@@ -27,7 +28,7 @@ OCAMLLIBPATH = @CAMLLIBPATH@
 SOURCES = fdkaac_stubs.c fdkaac.mli fdkaac.ml
 RESULT = fdkaac
 OCAMLDOCFLAGS = -stars
-LIBINSTALL_FILES = $(wildcard *.mli *.cmi *.cma *.cmxa *.cmx *.a *.so)
+LIBINSTALL_FILES = $(wildcard *.mli *.cmi *.cma *.cmxa *.cmx *.cmxs *.a *.so)
 ACLIBS = @LIBS@
 LDFLAGS = @LDFLAGS@
 CLIBS = $(ACLIBS:-l%=%)
@@ -40,11 +41,36 @@ INCDIRS = @INC@
 NO_CUSTOM = yes
 OCAMLFLAGS = @OCAMLFLAGS@
 
-all: $(OCAMLBEST)
+all: $(OCAMLBEST) $(OCAML_DYNLINK) clean-dyn-cmi
 
 byte: byte-code-library
 
 opt: native-code-library
+
+byte-dyn: fdkaac.cma fdkaac_loader.cma
+
+fdkaac_loader.cma: fdkaac_dynlink.mli fdkaac.cma fdkaac_loader.ml
+	$(OCAMLC) -a $(OCAMLFLAGS) fdkaac_dynlink.mli fdkaac_loader.ml -o fdkaac_loader.cma
+
+opt-dyn : fdkaac.cmxs fdkaac_loader.cmxs
+
+fdkaac_dynlink.mli: fdkaac_dynlink.mli.in fdkaac.cmi
+	$(OCAMLC) -i -intf fdkaac_dynlink.mli.in > fdkaac_dynlink.mli 2>/dev/null
+
+fdkaac.cmxs: fdkaac.ml fdkaac_stubs.o
+	[ ! -f fdkaac.cmx ] || mv fdkaac.cmx fdkaac.cmx.old
+	$(OCAMLOPT) $(OCAMLFLAGS) $(CLIBS_OPTS) -shared fdkaac.ml fdkaac_stubs.o -o fdkaac.cmxs
+	[ ! -f fdkaac.cmx.old ] || mv fdkaac.cmx.old fdkaac.cmx
+
+fdkaac_loader.cmxs: fdkaac_dynlink.mli fdkaac.cmxs fdkaac_loader.ml
+	[ ! -f fdkaac.cmx ] || mv fdkaac.cmx fdkaac.cmx.old
+	[ ! -f fdkaac.cmxa ] || mv fdkaac.cmxa fdkaac.cmxa.old
+	$(OCAMLOPT) $(OCAMLFLAGS) -shared fdkaac_dynlink.mli fdkaac_loader.ml -o fdkaac_loader.cmxs
+	[ ! -f fdkaac.cmx.old ] || mv fdkaac.cmx.old fdkaac.cmx
+	[ ! -f fdkaac.cmxa.old ] || mv fdkaac.cmxa.old fdkaac.cmxa
+
+clean-dyn-cmi: $(OCAML_DYNLINK)
+	rm -f fdkaac_dynlink.cmi
 
 native-code-library: byte-code-library
 
