@@ -1,5 +1,5 @@
 (*
- * Copyright 2003 Savonet team
+ * Copyright 2013 Savonet team
  *
  * This file is part of OCaml-Vorbis.
  *
@@ -17,14 +17,6 @@
  * along with OCaml-Vorbis; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *)
-
-(**
-  * An wav to ogg converter using OCaml-Vorbis.
-  *
-  * @author Samuel Mimram, and many others...
-  *)
-
-(* $Id$ *)
 
 open Unix
 
@@ -71,7 +63,7 @@ let string_of_aot = function
   | `Mpeg_2 `HE_AAC -> "MPEG2 HE-AAC"
   | `Mpeg_2 `HE_AAC_v2 -> "MPEG2 HE-AAC v2"
 
-let aots = 
+let aots =
   [
     "MPEG4 AAC-LC";
     "MPEG4 HE-AAC";
@@ -98,16 +90,16 @@ let _ =
       "--afterburner", Arg.Bool (fun b -> afterburner := b),
       "Enable afterburner effect.";
       "--aot", Arg.String (fun x -> aot := aot_of_string x),
-      (Printf.sprintf 
-        "Audio object type. Possible values:\n    %s" (String.concat ",\n    " aots))
+      (Printf.sprintf
+         "Audio object type. Possible values:\n    %s" (String.concat ",\n    " aots))
     ]
     (
       let pnum = ref (-1) in
-        (fun s -> incr pnum; match !pnum with
-           | 0 -> src := s
-           | 1 -> dst := s
-           | _ -> Printf.eprintf "Error: too many arguments\n"; exit 1
-        )
+      (fun s -> incr pnum; match !pnum with
+      | 0 -> src := s
+      | 1 -> dst := s
+      | _ -> Printf.eprintf "Error: too many arguments\n"; exit 1
+      )
     ) usage;
   if !src = "" || !dst = "" then
     (
@@ -116,45 +108,60 @@ let _ =
     );
   let ic = open_in_bin !src in
   let oc = open_out_bin !dst in
-    (* TODO: improve! *)
-    if input_string ic 4 <> "RIFF" then invalid_arg "No RIFF tag";
-    ignore (input_string ic 4);
-    if input_string ic 4 <> "WAVE" then invalid_arg "No WAVE tag";
-    if input_string ic 4 <> "fmt " then invalid_arg "No fmt tag";
-    let _ = input_int ic in
-    let _ = input_short ic in (* TODO: should be 1 *)
-    let channels = input_short ic in
-    let infreq = input_int ic in
-    let _ = input_int ic in (* bytes / s *)
-    let _ = input_short ic in (* block align *)
-    let bits = input_short ic in
-    let enc = Fdkaac.Encoder.create channels in 
-    Fdkaac.Encoder.set enc (`Aot !aot);
-    Fdkaac.Encoder.set enc (`Bitrate !bitrate);
-    Fdkaac.Encoder.set enc (`Transmux `Adts);
-    Fdkaac.Encoder.set enc (`Samplerate infreq);
-    Fdkaac.Encoder.set enc (`Afterburner !afterburner);
-    let buflen = 1024 in
-    let data = String.create buflen in
-    let start = Unix.time () in
-      Printf.printf
-        "Input detected: PCM WAVE %d channels, %d Hz, %d bits\n%!"
-        channels infreq bits;
-      Printf.printf
-        "Encoding to: %s, %d channels, %d Hz, %d kbps, afterburner: %b\nPlease wait...\n%!"
-        (string_of_aot !aot) channels infreq (!bitrate/1000) !afterburner;
-      if input_string ic 4 <> "data" then invalid_arg "No data tag";
-        begin try while true do
-          let len = input ic data 0 buflen in
-          if len = 0 then
-            raise End_of_file;
-          let ret = Fdkaac.Encoder.encode enc data 0 len in
-          output_string oc ret;
-        done;
-        with End_of_file -> () end;
-        let ret = Fdkaac.Encoder.flush enc in
+  (* TODO: improve! *)
+  if input_string ic 4 <> "RIFF" then invalid_arg "No RIFF tag";
+  ignore (input_string ic 4);
+  if input_string ic 4 <> "WAVE" then invalid_arg "No WAVE tag";
+  if input_string ic 4 <> "fmt " then invalid_arg "No fmt tag";
+  let _ = input_int ic in
+  let _ = input_short ic in (* TODO: should be 1 *)
+  let channels = input_short ic in
+  let infreq = input_int ic in
+  let _ = input_int ic in (* bytes / s *)
+  let _ = input_short ic in (* block align *)
+  let bits = input_short ic in
+  let enc = Fdkaac.Encoder.create channels in
+  Fdkaac.Encoder.set enc (`Aot !aot);
+  Fdkaac.Encoder.set enc (`Bitrate !bitrate);
+  Fdkaac.Encoder.set enc (`Transmux `Adts);
+  Fdkaac.Encoder.set enc (`Samplerate infreq);
+  Fdkaac.Encoder.set enc (`Afterburner !afterburner);
+  let buflen = 1024 in
+  let data = String.create buflen in
+  let start = Unix.time () in
+  Printf.printf
+    "Input detected: PCM WAVE %d channels, %d Hz, %d bits\n%!"
+    channels infreq bits;
+  Printf.printf
+    "Encoding to: %s, %d channels, %d Hz, %d kbps, afterburner: %b\nPlease wait...\n%!"
+    (string_of_aot !aot) channels infreq (!bitrate/1000) !afterburner;
+  (* skip headers *)
+  let rec aux () =
+    let tag = input_string ic 4 in
+    match tag with
+    | "LIST" ->
+      let n = input_int ic in
+      let _ = input_string ic n in
+      aux ()
+    | "data" -> ()
+    | _ -> invalid_arg "No data tag"
+  in
+  aux ();
+  begin
+    try while true do
+        let len = input ic data 0 buflen in
+        if len = 0 then
+          raise End_of_file;
+        let ret = Fdkaac.Encoder.encode enc data 0 len in
         output_string oc ret;
-        close_in ic;
-        close_out oc;
-        Printf.printf "Finished in %.0f seconds.\n" ((Unix.time ())-.start);
-        Gc.full_major ()
+      done;
+    with
+    | End_of_file -> ()
+    | Fdkaac.Encoder.Error _ as e -> failwith (match Fdkaac.Encoder.string_of_exception e with Some s -> s | None -> "Unknown error.")
+  end;
+  let ret = Fdkaac.Encoder.flush enc in
+  output_string oc ret;
+  close_in ic;
+  close_out oc;
+  Printf.printf "Finished in %.0f seconds.\n" ((Unix.time ())-.start);
+  Gc.full_major ()
