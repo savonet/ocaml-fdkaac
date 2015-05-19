@@ -14,7 +14,8 @@ module type Fdkaac_t =
         type mpeg4_aac =
             [ `AAC_ELD | `AAC_LC | `AAC_LD | `HE_AAC | `HE_AAC_v2 ]
         type aot = [ `Mpeg_2 of mpeg2_aac | `Mpeg_4 of mpeg4_aac ]
-        type bitrate_mode = [ `Constant | `Full_bitreservoir ]
+        type bitrate_mode =
+            [ `Constant | `Full_bitreservoir | `Variable of int ]
         type transmux =
             [ `Adif | `Adts | `Latm | `Latm_out_of_band | `Loas | `Raw ]
         type param_name =

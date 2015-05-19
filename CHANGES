@@ -1,3 +1,7 @@
+0.2.1 ()
+=====
+* Added variable bitrate mode.
+
 0.2.0 (18-05-2013)
 =====
 * Added dynamic loader

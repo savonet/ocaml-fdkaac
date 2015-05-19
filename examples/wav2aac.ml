@@ -24,7 +24,7 @@ let src = ref ""
 let dst = ref ""
 
 let input_string chan len =
-  let ans = String.create len in
+  let ans = Bytes.create len in
     (* TODO: check length *)
     ignore (input chan ans 0 len) ;
     ans
@@ -39,6 +39,8 @@ let input_int chan =
 let input_short chan =
   let buf = input_string chan 2 in
     (int_of_char buf.[0]) + (int_of_char buf.[1]) lsl 8
+
+let vbr = ref 0
 
 let bitrate = ref 64000
 
@@ -85,6 +87,8 @@ let _ =
   let aots = List.map (Printf.sprintf "%S") aots in
   Arg.parse
     [
+      "--vbr", Arg.Int (fun i -> vbr := i),
+      "Encode in variable bitrate.";
       "--bitrate", Arg.Int (fun b -> bitrate := b * 1000),
       "Bitrate, in kilobits per second, defaults to 64kbps";
       "--afterburner", Arg.Bool (fun b -> afterburner := b),
@@ -122,19 +126,31 @@ let _ =
   let bits = input_short ic in
   let enc = Fdkaac.Encoder.create channels in
   Fdkaac.Encoder.set enc (`Aot !aot);
-  Fdkaac.Encoder.set enc (`Bitrate !bitrate);
+  if !vbr <> 0 then
+    Fdkaac.Encoder.set enc (`Bitrate_mode (`Variable !vbr))
+  else
+    begin
+     Fdkaac.Encoder.set enc (`Bitrate_mode `Constant);
+     Fdkaac.Encoder.set enc (`Bitrate !bitrate)
+    end;
   Fdkaac.Encoder.set enc (`Transmux `Adts);
   Fdkaac.Encoder.set enc (`Samplerate infreq);
   Fdkaac.Encoder.set enc (`Afterburner !afterburner);
   let buflen = 1024 in
-  let data = String.create buflen in
+  let data = Bytes.create buflen in
   let start = Unix.time () in
   Printf.printf
     "Input detected: PCM WAVE %d channels, %d Hz, %d bits\n%!"
     channels infreq bits;
+  let br_info =
+    if !vbr <> 0 then
+      Printf.sprintf "VBR %d" !vbr
+    else
+      Printf.sprintf "%d kbps" (!bitrate/1000)
+  in
   Printf.printf
-    "Encoding to: %s, %d channels, %d Hz, %d kbps, afterburner: %b\nPlease wait...\n%!"
-    (string_of_aot !aot) channels infreq (!bitrate/1000) !afterburner;
+    "Encoding to: %s, %d channels, %d Hz, %s, afterburner: %b\nPlease wait...\n%!"
+    (string_of_aot !aot) channels infreq br_info !afterburner;
   (* skip headers *)
   let rec aux () =
     let tag = input_string ic 4 in

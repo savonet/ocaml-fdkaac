@@ -43,7 +43,7 @@ struct
     function 
        | Invalid_handle -> Some "Handle passed to function call was invalid"
        | Unsupported_parameter -> Some "Parameter not available"
-       | Invalid_config -> Some "Configuration not provided"
+       | Invalid_config -> Some "Invalid configuration"
        | Invalid_data -> Some "Invalid input data"
        | Error 0 -> Some "General initialization error"
        | Error 1 -> Some "AAC library initialization error"
@@ -122,16 +122,18 @@ struct
     [
        | `Constant
        | `Full_bitreservoir
+       | `Variable of int
     ]
   
   let int_of_bitrate_mode = function
     | `Constant -> 0
+    | `Variable vbr -> vbr
     | `Full_bitreservoir -> 8
   
   let bitrate_mode_of_int = function
     | 0 -> `Constant
     | 8 -> `Full_bitreservoir
-    | _ -> raise Unsupported_parameter
+    | vbr -> `Variable vbr
   
   type transmux =
     [
