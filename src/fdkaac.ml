@@ -171,7 +171,7 @@ struct
       | `Sbr_mode of bool
       | `Granule_length of int
       | `Afterburner of bool
-      | `Bandwidth of bool
+      | `Bandwidth of int
       | `Transmux of transmux 
     ]
   
@@ -207,7 +207,7 @@ struct
     | `Sbr_mode x -> (int_of_param_name `Sbr_mode), (if x then 1 else 0)
     | `Granule_length x -> (int_of_param_name `Granule_length), x
     | `Afterburner x -> (int_of_param_name `Afterburner), (if x then 1 else 0)
-    | `Bandwidth x -> (int_of_param_name `Bandwidth), (if x then 1 else 0)
+    | `Bandwidth x -> (int_of_param_name `Bandwidth), x
     | `Transmux x -> (int_of_param_name `Transmux), (int_of_transmux x)
   
   external set : enc -> int -> int -> unit = "ocaml_fdkaac_set_param"
@@ -224,7 +224,7 @@ struct
     | `Sbr_mode, x -> `Sbr_mode (x == 1)
     | `Granule_length, x -> `Granule_length x
     | `Afterburner, x -> `Afterburner (x == 1)
-    | `Bandwidth, x -> `Bandwidth (x == 1)
+    | `Bandwidth, x -> `Bandwidth x
     | `Transmux, x -> `Transmux (transmux_of_int x)
   
   external get : enc -> int -> int = "ocaml_fdkaac_get_param"

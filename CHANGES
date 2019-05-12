@@ -1,3 +1,7 @@
+0.3.0 ()
+=====
+* Fixed type for `Bandwidth param.
+
 0.2.1 (03-08-2015)
 =====
 * Added variable bitrate mode.

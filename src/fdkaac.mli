@@ -107,7 +107,7 @@ sig
       | `Sbr_mode of bool
       | `Granule_length of int
       | `Afterburner of bool
-      | `Bandwidth of bool
+      | `Bandwidth of int
       | `Transmux of transmux
     ]
   
