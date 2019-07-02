@@ -14,6 +14,9 @@ all clean install uninstall:
 distclean: clean
 	$(MAKE) -C examples clean
 
+test: all
+	$(MAKE) -C examples $@
+
 doc:
 	$(MAKE) -C src htdoc
 	mkdir -p doc
