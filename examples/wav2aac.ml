@@ -25,9 +25,9 @@ let dst = ref ""
 
 let input_string chan len =
   let ans = Bytes.create len in
-    (* TODO: check length *)
-    ignore (input chan ans 0 len) ;
-    ans
+  (* TODO: check length *)
+  ignore (input chan ans 0 len) ;
+  Bytes.to_string ans
 
 let input_int chan =
   let buf = input_string chan 4 in
@@ -164,8 +164,10 @@ let _ =
   in
   aux ();
   begin
-    try while true do
+    try
+      while true do
         let len = input ic data 0 buflen in
+        let data = Bytes.to_string data in
         if len = 0 then
           raise End_of_file;
         let ret = Fdkaac.Encoder.encode enc data 0 len in
