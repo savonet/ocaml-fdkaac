@@ -4,10 +4,7 @@ addons:
     packages:
     - ocaml-nox
     - ocaml-findlib
+    - libfdk-aac-dev
     - ffmpeg
-
-before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -y libfdk-aac-dev
 
 script: ./bootstrap && ./configure && make && make test
