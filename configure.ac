@@ -17,6 +17,8 @@ fi
 
 PKG_PROG_PKG_CONFIG()
 PKG_CONFIG_CHECK_MODULE([fdk-aac],[0.1.1])
+fdkaac_version=`$PKG_CONFIG $PKG_CONFIG_OPTIONS --modversion fdk-aac`
+AC_MSG_RESULT([fdk-aac version is ${fdkaac_version}])
 
 # substitutions to perform
 AC_SUBST(VERSION)
