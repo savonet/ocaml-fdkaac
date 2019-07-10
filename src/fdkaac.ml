@@ -54,16 +54,7 @@ struct
        | End_of_file -> Some "End of file reached"
        | _ -> None
   
-  (* Dummy registration function for
-   * user compiling with ocaml < 3.11.2 *)
-  let register_printer _ = ()
-  
-  (* Now open Printexc,
-   * overriding register_printer
-   * if present *)
-  open Printexc
-  
-  let () = register_printer string_of_exception
+  let () = Printexc.register_printer string_of_exception
   
   type enc
   
