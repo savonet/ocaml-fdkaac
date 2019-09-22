@@ -1,6 +1,6 @@
 opam-version: "2.0"
 name: "fdkaac"
-version: "0.3.0"
+version: "0.3.1"
 maintainer: "The Savonet Team <savonet-users@lists.sourceforge.net>"
 authors: "The Savonet Team <savonet-users@lists.sourceforge.net>"
 homepage: "https://github.com/savonet/ocaml-fdkaac"

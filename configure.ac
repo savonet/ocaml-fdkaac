@@ -1,6 +1,6 @@
 
 # check for one particular file of the sources 
-AC_INIT([ocaml-fdkaac],[0.3.0],[savonet-users@lists.sourceforge.net])
+AC_INIT([ocaml-fdkaac],[0.3.1],[savonet-users@lists.sourceforge.net])
 
 VERSION=$PACKAGE_VERSION
 AC_MSG_RESULT([configuring $PACKAGE_STRING])
@@ -16,9 +16,26 @@ else
 fi
 
 PKG_PROG_PKG_CONFIG()
-PKG_CONFIG_CHECK_MODULE([fdk-aac],[0.1.1])
-fdkaac_version=`$PKG_CONFIG $PKG_CONFIG_OPTIONS --modversion fdk-aac`
-AC_MSG_RESULT([fdk-aac version is ${fdkaac_version}])
+
+AC_MSG_CHECKING([whether pkg-config knows about fdk-aac])
+if ! $PKG_CONFIG $PKG_CONFIG_OPTIONS --exists fdk-aac; then
+  AC_MSG_ERROR([fdk-aac.pc not found.. Do you need to set PKG_CONFIG_PATH?])
+else
+  fdkaac_version=`$PKG_CONFIG $PKG_CONFIG_OPTIONS --modversion fdk-aac`
+  if ! $PKG_CONFIG $PKG_CONFIG_OPTIONS --atleast-version=0.1.1 fdk-aac; then
+    AC_MSG_ERROR([requires version >= $2, found ${fdkaac_version}])
+  else
+    if ! $PKG_CONFIG $PKG_CONFIG_OPTIONS --max-version=0.1.6 fdk-aac; then
+      AC_MSG_ERROR([requires version <= 0.1.6, found ${fdkaac_version}])
+    else
+      AC_MSG_RESULT([ok])
+    fi
+  fi
+fi
+CFLAGS="$CFLAGS `$PKG_CONFIG $PKG_CONFIG_OPTIONS --cflags fdk-aac`"
+CPPFLAGS="$CPPFLAGS `$PKG_CONFIG $PKG_CONFIG_OPTIONS --cflags fdk-aac`"
+LIBS="$LIBS `$PKG_CONFIG $PKG_CONFIG_OPTIONS --libs-only-l fdk-aac`"
+LDFLAGS="$LDFLAGS `$PKG_CONFIG $PKG_CONFIG_OPTIONS --libs-only-L fdk-aac`"
 
 # substitutions to perform
 AC_SUBST(VERSION)
