@@ -300,3 +300,20 @@ CAMLprim value ocaml_fdkaac_get_param(value e, value p)
 
   CAMLreturn(Val_int(ans));
 }
+
+CAMLprim value ocaml_fdkaac_info(value e)
+{
+  CAMLparam1(e);
+  CAMLlocal1(ans);
+  HANDLE_AACENCODER enc = Encoder_val(e);
+  AACENC_InfoStruct info = { 0 };
+
+  // Apparently we need to do this before being able to access info...
+  check_for_err(aacEncEncode(enc, NULL, NULL, NULL, NULL));
+  check_for_err(aacEncInfo(enc, &info));
+
+  ans = caml_alloc_tuple(2);
+  Store_field(ans, 0, Val_int(info.inputChannels));
+  Store_field(ans, 1, Val_int(info.frameLength));
+  CAMLreturn(ans);
+}

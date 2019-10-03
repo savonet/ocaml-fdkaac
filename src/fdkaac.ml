@@ -225,6 +225,15 @@ struct
       get enc.enc (int_of_param_name param)
     in
     pack_param (param, x)
+
+  type info =
+    {
+      input_channels : int;
+      frame_length : int;
+    }
+
+  external info : enc -> info = "ocaml_fdkaac_info"
+  let info enc = info enc.enc
     
   external encode : enc -> string -> int -> int -> string = "ocaml_fdkaac_encode"
   

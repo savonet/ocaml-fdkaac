@@ -1,6 +1,4 @@
-
-# check for one particular file of the sources 
-AC_INIT([ocaml-fdkaac],[0.3.1],[savonet-users@lists.sourceforge.net])
+AC_INIT([ocaml-fdkaac],[0.3.2],[savonet-users@lists.sourceforge.net])
 
 VERSION=$PACKAGE_VERSION
 AC_MSG_RESULT([configuring $PACKAGE_STRING])
@@ -25,11 +23,7 @@ else
   if ! $PKG_CONFIG $PKG_CONFIG_OPTIONS --atleast-version=0.1.1 fdk-aac; then
     AC_MSG_ERROR([requires version >= $2, found ${fdkaac_version}])
   else
-    if ! $PKG_CONFIG $PKG_CONFIG_OPTIONS --max-version=0.1.6 fdk-aac; then
-      AC_MSG_ERROR([requires version <= 0.1.6, found ${fdkaac_version}])
-    else
-      AC_MSG_RESULT([ok])
-    fi
+    AC_MSG_RESULT([ok])
   fi
 fi
 CFLAGS="$CFLAGS `$PKG_CONFIG $PKG_CONFIG_OPTIONS --cflags fdk-aac`"

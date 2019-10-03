@@ -29,6 +29,7 @@ SOURCES = fdkaac_stubs.c fdkaac.mli fdkaac.ml
 RESULT = fdkaac
 OCAMLDOCFLAGS = -stars
 LIBINSTALL_FILES = $(wildcard *.mli *.cmi *.cma *.cmxa *.cmx *.cmxs *.a *.so)
+ANNOTATE = true
 ACLIBS = @LIBS@
 LDFLAGS = @LDFLAGS@
 CLIBS = $(ACLIBS:-l%=%)

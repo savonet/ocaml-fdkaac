@@ -139,7 +139,8 @@ let _ =
   Fdkaac.Encoder.set enc (`Samplerate infreq);
   Fdkaac.Encoder.set enc (`Afterburner !afterburner);
   Fdkaac.Encoder.set enc (`Sbr_mode !sbr);
-  let buflen = 1024 in
+  let info = Fdkaac.Encoder.info enc in
+  let buflen = channels*2*info.frame_length in
   let data = Bytes.create buflen in
   let start = Unix.time () in
   Printf.printf
@@ -180,7 +181,13 @@ let _ =
     | End_of_file -> ()
     | Fdkaac.Encoder.Error _ as e -> failwith (match Fdkaac.Encoder.string_of_exception e with Some s -> s | None -> "Unknown error.")
   end;
-  let ret = Fdkaac.Encoder.flush enc in
+  let ret =
+    try
+      Fdkaac.Encoder.flush enc
+    with
+    | Fdkaac.Encoder.Unsupported_parameter ->
+      Printf.printf "Could not flush.\n"; ""
+  in
   output_string oc ret;
   close_in ic;
   close_out oc;
