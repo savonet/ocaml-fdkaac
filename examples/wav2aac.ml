@@ -80,6 +80,7 @@ let aots =
 let aot = ref (`Mpeg_4 `HE_AAC_v2)
 
 let afterburner = ref true
+let sbr = ref true
 
 let usage = "usage: wav2aac [options] source destination"
 
@@ -91,11 +92,12 @@ let _ =
       "Encode in variable bitrate.";
       "--bitrate", Arg.Int (fun b -> bitrate := b * 1000),
       "Bitrate, in kilobits per second, defaults to 64kbps";
-      "--afterburner", Arg.Bool (fun b -> afterburner := b),
+      "--afterburner", Arg.Set afterburner,
       "Enable afterburner effect.";
       "--aot", Arg.String (fun x -> aot := aot_of_string x),
       (Printf.sprintf
-         "Audio object type. Possible values:\n    %s" (String.concat ",\n    " aots))
+         "Audio object type. Possible values:\n    %s" (String.concat ",\n    " aots));
+      "--no-sbr", Arg.Clear sbr, "Disable spectral band replication.";
     ]
     (
       let pnum = ref (-1) in
@@ -136,6 +138,7 @@ let _ =
   Fdkaac.Encoder.set enc (`Transmux `Adts);
   Fdkaac.Encoder.set enc (`Samplerate infreq);
   Fdkaac.Encoder.set enc (`Afterburner !afterburner);
+  Fdkaac.Encoder.set enc (`Sbr_mode !sbr);
   let buflen = 1024 in
   let data = Bytes.create buflen in
   let start = Unix.time () in
@@ -149,8 +152,8 @@ let _ =
       Printf.sprintf "%d kbps" (!bitrate/1000)
   in
   Printf.printf
-    "Encoding to: %s, %d channels, %d Hz, %s, afterburner: %b\nPlease wait...\n%!"
-    (string_of_aot !aot) channels infreq br_info !afterburner;
+    "Encoding to: %s, %d channels, %d Hz, %s, afterburner: %b, sbr: %b\nPlease wait...\n%!"
+    (string_of_aot !aot) channels infreq br_info !afterburner !sbr;
   (* skip headers *)
   let rec aux () =
     let tag = input_string ic 4 in
