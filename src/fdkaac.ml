@@ -300,5 +300,6 @@ struct
       done;
       assert false
     with
+      | Unsupported_parameter
       | End_of_file -> Buffer.contents buf 
 end
