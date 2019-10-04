@@ -119,14 +119,6 @@ sig
   
   val get : t -> param_name -> param
 
-  type info =
-    {
-      input_channels : int;
-      frame_length : int;
-    }
-
-  val info : t -> info
-  
   val encode : t -> string -> int -> int -> string
   
   val flush : t -> string

@@ -139,8 +139,7 @@ let _ =
   Fdkaac.Encoder.set enc (`Samplerate infreq);
   Fdkaac.Encoder.set enc (`Afterburner !afterburner);
   Fdkaac.Encoder.set enc (`Sbr_mode !sbr);
-  let info = Fdkaac.Encoder.info enc in
-  let buflen = channels*2*info.frame_length in
+  let buflen = 1024 in
   let data = Bytes.create buflen in
   let start = Unix.time () in
   Printf.printf

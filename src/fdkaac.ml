@@ -57,15 +57,27 @@ struct
   let () = Printexc.register_printer string_of_exception
   
   type enc
+
+  type info =
+    {
+      input_channels : int;
+      frame_length : int;
+    }
+
+  external info : enc -> info = "ocaml_fdkaac_info"
   
   type t =
     { enc: enc;
+      mutable info: info option;
+      buffer: Buffer.t;
       chans: int }
   
   external create : int -> enc = "ocaml_fdkaac_init_enc"
   
   let create chans =
     { enc = create chans;
+      info = None;
+      buffer = Buffer.create 1024;
       chans = chans }
   
   type mpeg2_aac =
@@ -226,26 +238,62 @@ struct
     in
     pack_param (param, x)
 
-  type info =
-    {
-      input_channels : int;
-      frame_length : int;
-    }
-
-  external info : enc -> info = "ocaml_fdkaac_info"
-  let info enc = info enc.enc
-    
   external encode : enc -> string -> int -> int -> string = "ocaml_fdkaac_encode"
-  
-  let encode enc buf ofs len =
-    if String.length buf - ofs < len then
+
+  (* Drop the first [len] bytes. *)
+  let buffer_drop buffer len =
+    let size = Buffer.length buffer in
+    if len = size then Buffer.clear buffer else
+     begin
+      let tmp = Buffer.sub buffer len (size-len) in
+        Buffer.clear buffer;
+        Buffer.add_string buffer tmp
+     end
+
+  let rec encode_frames enc len pos out =
+    if len <= Buffer.length enc.buffer - pos then
+     begin
+      let data = Buffer.sub enc.buffer pos len in
+      Buffer.add_string out (encode enc.enc data 0 len);
+      encode_frames enc len (pos+len) out
+    end
+   else
+    if 0 < pos then buffer_drop enc.buffer pos
+
+  let get_info enc =
+    match enc.info with
+      | Some info ->
+         info
+      | None ->
+         let info = info enc.enc in
+         enc.info <- Some info;
+         info
+
+  let chunk_length enc =
+    let info = get_info enc in
+    2*info.input_channels*info.frame_length
+
+  let encode enc data ofs len =
+    if String.length data - ofs < len then
       raise Invalid_data;
-    encode enc.enc buf ofs len
+    Buffer.add_substring enc.buffer data ofs len;
+    let ret = Buffer.create 1024 in
+    encode_frames enc (chunk_length enc) 0 ret;
+    Buffer.contents ret 
   
   external flush : enc -> string = "ocaml_fdkaac_flush"
   
   let flush enc =
     let buf = Buffer.create 1024 in
+    let len = chunk_length enc in
+    encode_frames enc len 0 buf;
+    let rem = Buffer.length enc.buffer in
+    if 0 < rem then
+     begin
+      Buffer.add_string enc.buffer
+        (String.make (len-rem) (Char.chr 0));
+      encode_frames enc len 0 buf
+    end; 
     try
       while true do
         Buffer.add_string buf (flush enc.enc)

@@ -21,3 +21,4 @@ examples/._d
 examples/*.cm*
 examples/wav2aac
 examples/wav2aac.o
+examples/wav2aac.annot
