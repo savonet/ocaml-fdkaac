@@ -14,10 +14,14 @@ Prerequisites:
 
 - findlib >= 0.8.1 (haven't tried earlier versions)
 
+- dune >= 2.0
+
 Compilation:
 ============
 
-	$ make all
+```
+$ dune build
+```
 
 This should build both the native and the byte-code version of the
 extension library.
@@ -25,10 +29,16 @@ extension library.
 Installation:
 =============
 
-	$ make install
+Via `opam`:
 
-This should install the library file (using ocamlfind) in the
-appropriate place.
+```
+$ opam install fdkaac
+```
+
+Via `dune` (for developers):
+```
+$ dune install
+```
 
 Author:
 =======
