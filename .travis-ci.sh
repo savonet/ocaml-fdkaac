@@ -8,6 +8,7 @@ if [ -n "${OPAM_SWITCH}" ]; then
 fi
 eval `opam config env`
 opam install -q -y dune depext
+opam pin -y add --no-action .
 opam depext -y -i fdkaac
 
 # compile
