@@ -1,12 +1,10 @@
 language: c
-dist: bionic
 sudo: false
 addons:
   apt:
+    sources:
+    - avsm
     packages:
-    - ocaml-nox
-    - ocaml-findlib
-    - libfdk-aac-dev
-    - ffmpeg
+    - opam
 
-script: ./bootstrap && ./configure && make && make test
+script: bash -ex .travis-ci.sh
