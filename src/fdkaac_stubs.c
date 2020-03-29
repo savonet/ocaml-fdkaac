@@ -231,7 +231,7 @@ CAMLprim value ocaml_fdkaac_encode(value e, value buf, value ofs, value len)
   check_for_err(err);
 
   ret = caml_alloc_string(outArgs.numOutBytes);
-  memcpy(String_val(ret), outbuf, outArgs.numOutBytes);
+  memcpy(Bp_val(ret), outbuf, outArgs.numOutBytes);
 
   CAMLreturn(ret);
 }
@@ -269,7 +269,7 @@ CAMLprim value ocaml_fdkaac_flush(value e)
   check_for_err(err);
 
   ret = caml_alloc_string(outArgs.numOutBytes);
-  memcpy(String_val(ret), outbuf, outArgs.numOutBytes);
+  memcpy(Bp_val(ret), outbuf, outArgs.numOutBytes);
 
   CAMLreturn(ret);
 }
