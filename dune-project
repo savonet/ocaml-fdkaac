@@ -1,4 +1,4 @@
-(lang dune 2.0)
+(lang dune 3.2)
 (version 0.3.2)
 (name fdkaac)
 (source (github savonet/ocaml-fdkaac))
@@ -13,6 +13,6 @@
  (synopsis "Fraunhofer FDK AAC Codec Library")
  (description "The FDK AAC Codec Library For Android contains an encoder implementation of the Advanced Audio Coding (AAC) audio codec.")
  (depends
-  (dune (> 2.0))
+  dune
   dune-configurator)
 )
