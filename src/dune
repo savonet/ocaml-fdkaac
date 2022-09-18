@@ -35,10 +35,11 @@
 
 (rule
  (deps
+  (:fdkaac_loader fdkaac_loader.ml)
   (:fdkaac_dynkink fdkaac_dynlink.mli))
  (target fdkaac_loader.cmxs)
  (action
-  (run %{ocamlopt} -shared %{fdkaac_dynkink} fdkaac_loader.ml -o %{target})))
+  (run %{ocamlopt} -shared %{fdkaac_dynkink} %{fdkaac_loader} -o %{target})))
 
 (install
  (files fdkaac_loader.cmxs fdkaac_dynlink.mli)
