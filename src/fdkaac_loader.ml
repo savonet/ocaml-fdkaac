@@ -29,5 +29,4 @@
 
 open Fdkaac_dynlink
 
-let () =
-  handler.fdkaac_module <- Some (module Fdkaac : Fdkaac_t)
+let () = handler.fdkaac_module <- Some (module Fdkaac : Fdkaac_t)

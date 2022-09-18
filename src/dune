@@ -18,19 +18,20 @@
 
 (rule
  (deps
-   (:fdkaac fdkaac.mli))
+  (:fdkaac fdkaac.mli))
  (target fdkaac.cmi)
  (action
   (run %{ocamlc} -c %{fdkaac})))
 
 (rule
  (deps
-   (:fdkaac_cmi fdkaac.cmi)
-   (:fdkaac_dynlink_in fdkaac_dynlink.mli.in))
+  (:fdkaac_cmi fdkaac.cmi)
+  (:fdkaac_dynlink_in fdkaac_dynlink.mli.in))
  (target fdkaac_dynlink.mli)
  (action
-  (with-stdout-to %{target}
-    (run %{ocamlc} -i -intf %{fdkaac_dynlink_in})))) 
+  (with-stdout-to
+   %{target}
+   (run %{ocamlc} -i -intf %{fdkaac_dynlink_in}))))
 
 (rule
  (deps

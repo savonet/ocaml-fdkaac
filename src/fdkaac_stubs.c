@@ -20,15 +20,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
- /* OCaml bindings for the libfdk-aac library. */
+/* OCaml bindings for the libfdk-aac library. */
 
-#include <caml/custom.h>
-#include <caml/signals.h>
-#include <caml/misc.h>
-#include <caml/memory.h>
-#include <caml/fail.h>
-#include <caml/callback.h>
 #include <caml/alloc.h>
+#include <caml/callback.h>
+#include <caml/custom.h>
+#include <caml/fail.h>
+#include <caml/memory.h>
+#include <caml/misc.h>
+#include <caml/signals.h>
 
 #include <fdk-aac/aacenc_lib.h>
 
@@ -36,87 +36,79 @@
 #include <string.h>
 
 /* Not all errors seem to be used
- * so we only check the one that 
+ * so we only check the one that
  * appear relevant.. */
-static void check_for_err(int ret)
-{
-  switch(ret)
-  {
-    case AACENC_OK:
-      return;
+static void check_for_err(int ret) {
+  switch (ret) {
+  case AACENC_OK:
+    return;
 
-    case AACENC_INVALID_HANDLE:
-      caml_raise_constant(*caml_named_value("fdkaac_exn_invalid_handle"));
-      break;
+  case AACENC_INVALID_HANDLE:
+    caml_raise_constant(*caml_named_value("fdkaac_exn_invalid_handle"));
+    break;
 
-    case AACENC_MEMORY_ERROR:
-      caml_raise_out_of_memory();
-      break;
+  case AACENC_MEMORY_ERROR:
+    caml_raise_out_of_memory();
+    break;
 
-    case AACENC_UNSUPPORTED_PARAMETER:
-      caml_raise_constant(*caml_named_value("fdkaac_exn_unsupported_parameter"));
-      break;
+  case AACENC_UNSUPPORTED_PARAMETER:
+    caml_raise_constant(*caml_named_value("fdkaac_exn_unsupported_parameter"));
+    break;
 
-    case AACENC_INVALID_CONFIG:
-      caml_raise_constant(*caml_named_value("fdkaac_exn_invalid_config"));
-      break;
+  case AACENC_INVALID_CONFIG:
+    caml_raise_constant(*caml_named_value("fdkaac_exn_invalid_config"));
+    break;
 
-    case AACENC_INIT_ERROR:
-      caml_raise_with_arg(*caml_named_value("fdkaac_exn_error"), Val_int(0));
-      break;
+  case AACENC_INIT_ERROR:
+    caml_raise_with_arg(*caml_named_value("fdkaac_exn_error"), Val_int(0));
+    break;
 
-    case AACENC_INIT_AAC_ERROR:
-      caml_raise_with_arg(*caml_named_value("fdkaac_exn_error"), Val_int(1));
-      break;
+  case AACENC_INIT_AAC_ERROR:
+    caml_raise_with_arg(*caml_named_value("fdkaac_exn_error"), Val_int(1));
+    break;
 
-    case AACENC_INIT_SBR_ERROR:
-      caml_raise_with_arg(*caml_named_value("fdkaac_exn_error"), Val_int(2));
-      break;
+  case AACENC_INIT_SBR_ERROR:
+    caml_raise_with_arg(*caml_named_value("fdkaac_exn_error"), Val_int(2));
+    break;
 
-    case AACENC_INIT_TP_ERROR:
-      caml_raise_with_arg(*caml_named_value("fdkaac_exn_error"), Val_int(3));
-      break;
+  case AACENC_INIT_TP_ERROR:
+    caml_raise_with_arg(*caml_named_value("fdkaac_exn_error"), Val_int(3));
+    break;
 
-    case AACENC_INIT_META_ERROR:
-      caml_raise_with_arg(*caml_named_value("fdkaac_exn_error"), Val_int(4));
-      break;
+  case AACENC_INIT_META_ERROR:
+    caml_raise_with_arg(*caml_named_value("fdkaac_exn_error"), Val_int(4));
+    break;
 
-    case AACENC_ENCODE_ERROR:
-      caml_raise_with_arg(*caml_named_value("fdkaac_exn_error"), Val_int(5));
-      break;
+  case AACENC_ENCODE_ERROR:
+    caml_raise_with_arg(*caml_named_value("fdkaac_exn_error"), Val_int(5));
+    break;
 
-    case AACENC_ENCODE_EOF:
-      caml_raise_constant(*caml_named_value("fdkaac_exn_encode_eof"));
-      break;
+  case AACENC_ENCODE_EOF:
+    caml_raise_constant(*caml_named_value("fdkaac_exn_encode_eof"));
+    break;
 
-    default:
-      caml_raise_with_arg(*caml_named_value("fdkaac_exn_unknown_error"), Val_int(ret));
-      break;
+  default:
+    caml_raise_with_arg(*caml_named_value("fdkaac_exn_unknown_error"),
+                        Val_int(ret));
+    break;
   }
 }
 
-#define Encoder_val(v) (*((HANDLE_AACENCODER*)Data_custom_val(v)))
+#define Encoder_val(v) (*((HANDLE_AACENCODER *)Data_custom_val(v)))
 
-static void finalize_encoder(value e)
-{
+static void finalize_encoder(value e) {
   HANDLE_AACENCODER enc = Encoder_val(e);
   aacEncClose(&enc);
 }
 
-static struct custom_operations encoder_ops =
-{
-  "ocaml_fdkaac_encoder",
-  finalize_encoder,
-  custom_compare_default,
-  custom_hash_default,
-  custom_serialize_default,
-  custom_deserialize_default
-};
+static struct custom_operations encoder_ops = {
+    "ocaml_fdkaac_encoder",   finalize_encoder,
+    custom_compare_default,   custom_hash_default,
+    custom_serialize_default, custom_deserialize_default};
 
 #include <stdio.h>
 
-CAMLprim value ocaml_fdkaac_init_enc(value chans)
-{
+CAMLprim value ocaml_fdkaac_init_enc(value chans) {
   CAMLparam0();
   CAMLlocal1(ans);
 
@@ -132,27 +124,27 @@ CAMLprim value ocaml_fdkaac_init_enc(value chans)
   }
 
   switch (channels) {
-    case 1:
-      mode = MODE_1;       
-      break;
-    case 2:
-      mode = MODE_2;       
-      break;
-    case 3:
-      mode = MODE_1_2;     
-      break;
-    case 4:
-      mode = MODE_1_2_1;   
-      break;
-    case 5:
-      mode = MODE_1_2_2;
-      break;
-    case 6:
-      mode = MODE_1_2_2_1;
-      break;
-    default:
-      free(enc);
-      caml_raise_constant(*caml_named_value("fdkaac_exn_unsupported_parameter"));
+  case 1:
+    mode = MODE_1;
+    break;
+  case 2:
+    mode = MODE_2;
+    break;
+  case 3:
+    mode = MODE_1_2;
+    break;
+  case 4:
+    mode = MODE_1_2_1;
+    break;
+  case 5:
+    mode = MODE_1_2_2;
+    break;
+  case 6:
+    mode = MODE_1_2_2_1;
+    break;
+  default:
+    free(enc);
+    caml_raise_constant(*caml_named_value("fdkaac_exn_unsupported_parameter"));
   }
 
   ret = aacEncoder_SetParam(enc, AACENC_CHANNELMODE, mode);
@@ -170,22 +162,21 @@ CAMLprim value ocaml_fdkaac_init_enc(value chans)
   }
 
   ans = caml_alloc_custom(&encoder_ops, sizeof(HANDLE_AACENCODER), 1, 0);
-  Encoder_val(ans) = enc;   
+  Encoder_val(ans) = enc;
 
   CAMLreturn(ans);
 }
 
-CAMLprim value ocaml_fdkaac_encode(value e, value buf, value ofs, value len)
-{
-  CAMLparam2(e,buf);
+CAMLprim value ocaml_fdkaac_encode(value e, value buf, value ofs, value len) {
+  CAMLparam2(e, buf);
   CAMLlocal1(ret);
 
   HANDLE_AACENCODER enc = Encoder_val(e);
 
-  AACENC_BufDesc inBuf = { 0 };
-  AACENC_BufDesc outBuf = { 0 };
-  AACENC_InArgs inArgs = { 0 };
-  AACENC_OutArgs outArgs = { 0 };
+  AACENC_BufDesc inBuf = {0};
+  AACENC_BufDesc outBuf = {0};
+  AACENC_InArgs inArgs = {0};
+  AACENC_OutArgs outArgs = {0};
 
   // Input buffer
   int bufid = IN_AUDIO_DATA;
@@ -198,13 +189,13 @@ CAMLprim value ocaml_fdkaac_encode(value e, value buf, value ofs, value len)
   inBuf.bufferIdentifiers = &bufid;
   inBuf.bufSizes = &buflen;
   inBuf.bufElSizes = &bufelsize;
-  
+
   bufs = malloc(buflen);
 
   if (bufs == NULL)
     caml_raise_out_of_memory();
 
-  memcpy(bufs, String_val(buf)+offset, buflen);
+  memcpy(bufs, String_val(buf) + offset, buflen);
 
   inBuf.bufs = &bufs;
 
@@ -236,17 +227,16 @@ CAMLprim value ocaml_fdkaac_encode(value e, value buf, value ofs, value len)
   CAMLreturn(ret);
 }
 
-CAMLprim value ocaml_fdkaac_flush(value e)
-{
+CAMLprim value ocaml_fdkaac_flush(value e) {
   CAMLparam1(e);
   CAMLlocal1(ret);
 
   HANDLE_AACENCODER enc = Encoder_val(e);
 
-  AACENC_BufDesc inBuf = { 0 };
-  AACENC_BufDesc outBuf = { 0 };
-  AACENC_InArgs inArgs = { 0 };
-  AACENC_OutArgs outArgs = { 0 };
+  AACENC_BufDesc inBuf = {0};
+  AACENC_BufDesc outBuf = {0};
+  AACENC_InArgs inArgs = {0};
+  AACENC_OutArgs outArgs = {0};
 
   inArgs.numInSamples = -1;
 
@@ -274,9 +264,8 @@ CAMLprim value ocaml_fdkaac_flush(value e)
   CAMLreturn(ret);
 }
 
-CAMLprim value ocaml_fdkaac_set_param(value e, value p, value v)
-{
-  CAMLparam3(e,p,v);
+CAMLprim value ocaml_fdkaac_set_param(value e, value p, value v) {
+  CAMLparam3(e, p, v);
 
   HANDLE_AACENCODER enc = Encoder_val(e);
 
@@ -287,9 +276,8 @@ CAMLprim value ocaml_fdkaac_set_param(value e, value p, value v)
   CAMLreturn(Val_unit);
 }
 
-CAMLprim value ocaml_fdkaac_get_param(value e, value p)
-{
-  CAMLparam2(e,p);
+CAMLprim value ocaml_fdkaac_get_param(value e, value p) {
+  CAMLparam2(e, p);
   int ans;
 
   HANDLE_AACENCODER enc = Encoder_val(e);
@@ -301,12 +289,11 @@ CAMLprim value ocaml_fdkaac_get_param(value e, value p)
   CAMLreturn(Val_int(ans));
 }
 
-CAMLprim value ocaml_fdkaac_info(value e)
-{
+CAMLprim value ocaml_fdkaac_info(value e) {
   CAMLparam1(e);
   CAMLlocal1(ans);
   HANDLE_AACENCODER enc = Encoder_val(e);
-  AACENC_InfoStruct info = { 0 };
+  AACENC_InfoStruct info = {0};
 
   // Apparently we need to do this before being able to access info...
   check_for_err(aacEncEncode(enc, NULL, NULL, NULL, NULL));
