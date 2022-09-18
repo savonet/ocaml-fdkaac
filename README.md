@@ -1,7 +1,7 @@
 ocaml-fdkaac
 
 This package contains an OCaml interface for 
-the fdk=aac library.
+the fdk-aac library.
 
 Please read the COPYING file before using this software.
 
