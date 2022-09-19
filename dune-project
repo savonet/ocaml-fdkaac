@@ -1,4 +1,4 @@
-(lang dune 3.0)
+(lang dune 2.9)
 (version 0.3.2)
 (name fdkaac)
 (source (github savonet/ocaml-fdkaac))
@@ -7,6 +7,7 @@
 (maintainers "The Savonet Team <savonet-users@lists.sourceforge.net>")
 
 (generate_opam_files true)
+(use_standard_c_and_cxx_flags false)
 
 (package
  (name fdkaac)
