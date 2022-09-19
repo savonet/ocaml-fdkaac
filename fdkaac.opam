@@ -10,7 +10,7 @@ license: "GPL-2.0"
 homepage: "https://github.com/savonet/ocaml-fdkaac"
 bug-reports: "https://github.com/savonet/ocaml-fdkaac/issues"
 depends: [
-  "dune" {>= "3.2"}
+  "dune" {>= "3.0"}
   "dune-configurator"
   "odoc" {with-doc}
 ]
