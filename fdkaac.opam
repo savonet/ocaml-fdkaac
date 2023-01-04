@@ -10,6 +10,7 @@ license: "GPL-2.0"
 homepage: "https://github.com/savonet/ocaml-fdkaac"
 bug-reports: "https://github.com/savonet/ocaml-fdkaac/issues"
 depends: [
+  "conf-fdkaac"
   "dune" {>= "2.9"}
   "dune-configurator"
   "odoc" {with-doc}
@@ -31,12 +32,3 @@ build: [
   ["dune" "install" "-p" name "--create-install-files" name]
 ]
 dev-repo: "git+https://github.com/savonet/ocaml-fdkaac.git"
-depexts: [
-  ["fdk-aac-dev"] {os-distribution = "alpine"}
-  ["libfdk-aac"] {os-distribution = "arch"}
-  ["fdk-aac-devel"] {os-distribution = "centos"}
-  ["fdk-aac-devel"] {os-distribution = "fedora"}
-  ["fdk-aac-devel"] {os-family = "suse"}
-  ["libfdk-aac-dev"] {os-family = "debian"}
-  ["fdk-aac"] {os = "macos" & os-distribution = "homebrew"}
-]

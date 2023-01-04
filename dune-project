@@ -14,6 +14,7 @@
  (synopsis "Fraunhofer FDK AAC Codec Library")
  (description "The FDK AAC Codec Library For Android contains an encoder implementation of the Advanced Audio Coding (AAC) audio codec.")
  (depends
+  conf-fdkaac
   dune
   dune-configurator)
 )

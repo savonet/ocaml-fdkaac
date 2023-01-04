@@ -60,17 +60,12 @@ module Encoder = struct
 
   external info : enc -> info = "ocaml_fdkaac_info"
 
-  type t = {
-    enc : enc;
-    mutable info : info option;
-    buffer : Buffer.t;
-    chans : int;
-  }
+  type t = { enc : enc; mutable info : info option; buffer : Buffer.t }
 
   external create : int -> enc = "ocaml_fdkaac_init_enc"
 
   let create chans =
-    { enc = create chans; info = None; buffer = Buffer.create 1024; chans }
+    { enc = create chans; info = None; buffer = Buffer.create 1024 }
 
   type mpeg2_aac = [ `AAC_LC | `HE_AAC | `HE_AAC_v2 ]
   type mpeg4_aac = [ mpeg2_aac | `AAC_LD | `AAC_ELD ]

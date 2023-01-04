@@ -171,12 +171,12 @@ let _ =
         output_string oc ret
       done
     with
-    | End_of_file -> ()
-    | Fdkaac.Encoder.Error _ as e ->
-        failwith
-          (match Fdkaac.Encoder.string_of_exception e with
-            | Some s -> s
-            | None -> "Unknown error.")
+      | End_of_file -> ()
+      | Fdkaac.Encoder.Error _ as e ->
+          failwith
+            (match Fdkaac.Encoder.string_of_exception e with
+              | Some s -> s
+              | None -> "Unknown error.")
   end;
   let ret =
     try Fdkaac.Encoder.flush enc
