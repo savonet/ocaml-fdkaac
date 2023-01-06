@@ -2,7 +2,7 @@
 (version 0.3.3)
 (name fdkaac)
 (source (github savonet/ocaml-fdkaac))
-(license GPL-2.0)
+(license GPL-2.0-or-later)
 (authors "The Savonet Team <savonet-users@lists.sourceforge.net>")
 (maintainers "The Savonet Team <savonet-users@lists.sourceforge.net>")
 
