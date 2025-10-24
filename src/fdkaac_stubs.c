@@ -109,7 +109,7 @@ static struct custom_operations encoder_ops = {
 #include <stdio.h>
 
 CAMLprim value ocaml_fdkaac_init_enc(value chans) {
-  CAMLparam0();
+  CAMLparam1(chans);
   CAMLlocal1(ans);
 
   int channels = Int_val(chans);
@@ -168,7 +168,7 @@ CAMLprim value ocaml_fdkaac_init_enc(value chans) {
 }
 
 CAMLprim value ocaml_fdkaac_encode(value e, value buf, value ofs, value len) {
-  CAMLparam2(e, buf);
+  CAMLparam4(e, buf, ofs, len);
   CAMLlocal1(ret);
 
   HANDLE_AACENCODER enc = Encoder_val(e);
