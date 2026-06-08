@@ -1,33 +1,21 @@
-ocaml-fdkaac
+# ocaml-fdkaac
 
-This package contains an OCaml interface for 
-the fdk-aac library.
+> [!WARNING]
+> This repository is read-only. All changes must be made in
+> [savonet/liquidsoap](https://github.com/savonet/liquidsoap) under
+> `src/modules/synced/fdkaac/` and will be mirrored here automatically.
+
+OCaml bindings for [fdk-aac](https://github.com/mstorsjo/fdk-aac), the Fraunhofer FDK AAC Codec Library.
 
 Please read the COPYING file before using this software.
 
-Prerequisites:
-==============
+## Prerequisites
 
-- ocaml >= 4.00.1 (haven't tried earlier versions)
+- OCaml >= 4.14
+- fdk-aac >= 0.1.1 (e.g. `apt install libfdk-aac-dev` or `brew install fdk-aac`)
+- dune >= 3.0
 
-- fdk-aac >= 0.1.1
-
-- findlib >= 0.8.1 (haven't tried earlier versions)
-
-- dune >= 2.0
-
-Compilation:
-============
-
-```
-$ dune build
-```
-
-This should build both the native and the byte-code version of the
-extension library.
-
-Installation:
-=============
+## Installation
 
 Via `opam`:
 
@@ -35,13 +23,13 @@ Via `opam`:
 $ opam install fdkaac
 ```
 
-Via `dune` (for developers):
+## Building from source
+
 ```
+$ dune build
 $ dune install
 ```
 
-Author:
-=======
+## Contact
 
-This author of this software may be contacted by electronic mail
-at the following address: savonet-users@lists.sourceforge.net.
+savonet-users@lists.sourceforge.net

@@ -1,3 +1,0 @@
-(executable
- (name wav2aac)
- (libraries unix fdkaac))
