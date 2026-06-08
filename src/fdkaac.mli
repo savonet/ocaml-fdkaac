@@ -39,17 +39,10 @@ module Encoder : sig
   type mpeg4_aac = [ mpeg2_aac | `AAC_LD | `AAC_ELD ]
   type aot = [ `Mpeg_4 of mpeg4_aac | `Mpeg_2 of mpeg2_aac ]
 
-  (** VBR modes gives roughly the following bit rates per channel:
-    *
-    * VBR | kbps/channel | AOTs
-    * -------------------------
-    * 1   | 20-32        | LC,HE,HEv2
-    * 2   | 32-40        | LC,HE,HEv2
-    * 3   | 48-56        | LC,HE,HEv2
-    * 4   | 64-72        | LC
-    * 5   | 96-112       | LC
-    *
-    * HE bit rates will be much lower. *)
+  (** VBR modes gives roughly the following bit rates per channel: * * VBR |
+      kbps/channel | AOTs * ------------------------- * 1 | 20-32 | LC,HE,HEv2 *
+      2 | 32-40 | LC,HE,HEv2 * 3 | 48-56 | LC,HE,HEv2 * 4 | 64-72 | LC * 5 |
+      96-112 | LC * * HE bit rates will be much lower. *)
   type bitrate_mode = [ `Constant | `Full_bitreservoir | `Variable of int ]
 
   type transmux = [ `Raw | `Adif | `Adts | `Latm | `Latm_out_of_band | `Loas ]

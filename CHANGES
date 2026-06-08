@@ -1,3 +1,7 @@
+0.3.4 (unreleased)
+=====
+* Remove dynamic loader.
+
 0.3.3 (04-01-2022)
 =====
 * Bring back dynamic loader (#5)
